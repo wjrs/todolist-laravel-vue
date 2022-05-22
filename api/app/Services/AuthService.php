@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Events\UserWasRegistred;
 use App\Exceptions\LoginInvalidException;
 use App\Exceptions\UserHasBeenTakenException;
+use App\Exceptions\VerifyEmailTokenInvalidException;
 use App\Models\User;
 use Str;
 
@@ -42,6 +44,27 @@ class AuthService
         $data['password'] = bcrypt($data['password']);
         $data['confirmation_token'] = Str::random(60);
 
-        return User::create($data);
+        $user = User::create($data);
+
+        if (!empty($user)) {
+            event(new UserWasRegistred($user));
+        }
+
+        return $user;
+    }
+
+    public function verifyEmail(string $token)
+    {
+        $user = User::where('confirmation_token', $token)->first();
+
+        if (empty($user)) {
+            throw new VerifyEmailTokenInvalidException();
+        }
+
+        $user->confirmation_token = null;
+        $user->email_verified_at = now();
+        $user->save();
+
+        return $user;
     }
 }

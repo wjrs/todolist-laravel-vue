@@ -6,6 +6,7 @@ use App\Exceptions\LoginInvalidException;
 use App\Exceptions\UserHasBeenTakenException;
 use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\AuthRegisterRequest;
+use App\Http\Requests\AuthVerifyEmailRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 
@@ -41,6 +42,15 @@ class AuthController extends Controller
     {
         $data = $request->validated();
         $user = $this->authService->register($data);
+
+        return new UserResource($user);
+    }
+
+    public function verifyEmail(AuthVerifyEmailRequest $request)
+    {
+        $data = $request->validated();
+
+        $user = $this->authService->verifyEmail($data['token']);
 
         return new UserResource($user);
     }
