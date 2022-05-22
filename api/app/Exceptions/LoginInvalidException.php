@@ -12,7 +12,7 @@ class LoginInvalidException extends Exception
     public function render()
     {
         return response()->json([
-            'error' => self::class,
+            'error' => class_basename($this),
             'message' => 'Email or password does not match.'
         ], 401);
     }
