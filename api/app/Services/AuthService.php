@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Events\ForgotPasswordEvent;
 use App\Events\UserWasRegistred;
 use App\Exceptions\LoginInvalidException;
 use App\Exceptions\UserHasBeenTakenException;
 use App\Exceptions\VerifyEmailTokenInvalidException;
+use App\Models\PasswordReset;
 use App\Models\User;
 use Str;
 
@@ -53,6 +55,11 @@ class AuthService
         return $user;
     }
 
+    /**
+     * @param string $token
+     * @return mixed
+     * @throws VerifyEmailTokenInvalidException
+     */
     public function verifyEmail(string $token)
     {
         $user = User::where('confirmation_token', $token)->first();
@@ -66,5 +73,23 @@ class AuthService
         $user->save();
 
         return $user;
+    }
+
+    /**
+     * @param string $email
+     * @return void
+     */
+    public function forgotPassword(string $email)
+    {
+        $user = User::where('email', $email)->firstOrFail();
+
+        $token = Str::random(60);
+
+        PasswordReset::create([
+            'email' => $user->email,
+            'token' => $token
+        ]);
+
+        event(new ForgotPasswordEvent($user, $token));
     }
 }
