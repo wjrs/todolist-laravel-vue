@@ -4,4 +4,5 @@ export default {
     UserHasBeenTakenException: 'Usuário já existe',
     VerifyEmailTokenInvalidException: 'Falha ao verificar seu email! Verifique o link no seu email e tente novamente.',
     UserNotFoundException: 'Usário não existente em nossos cadastros',
+    ResetPasswordTokenInvalidException: 'Token expirado ou e-mail incorreto! Verifique os dados.',
 };
