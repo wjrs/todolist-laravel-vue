@@ -9,6 +9,7 @@ import ForgotPassword from "@/views/ForgotPassword"
 import ResetPassword from "@/views/ResetPassword";
 import Home from "@/views/Home";
 import Guard from "@/service/middleware";
+import Profile from "@/views/Profile";
 
 Vue.use(VueRouter)
 
@@ -18,6 +19,7 @@ const routes = [
       beforeEnter: Guard.redirectIfNotAuthenticated,
       children: [
           { path: '', name: 'index', component: Home },
+          { path: 'profile', name: 'profile', component: Profile },
       ],
   },
   {
