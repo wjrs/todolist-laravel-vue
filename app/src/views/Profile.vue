@@ -152,8 +152,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 import {ValidationObserver, ValidationProvider} from "vee-validate";
+import message from "@/utils/messages";
 
 export default {
     name: 'Profile',
@@ -169,6 +170,13 @@ export default {
             lastName: '',
             email: '',
             password: '',
+            response: {
+                color: '',
+                message: '',
+            },
+            spinner: {
+                update_user: false,
+            },
         }
     },
 
@@ -179,15 +187,49 @@ export default {
     },
 
     created() {
-        this.firstName = this.user.firstName;
-        this.lastName = this.user.lastName;
+        this.firstName = this.user.first_name;
+        this.lastName = this.user.last_name;
         this.email = this.user.email;
     },
 
-    methods: {},
+    methods: {
+        ...mapMutations('user', ['STORE_USER']),
+
+        async update() {
+            const validator = await this.$refs.profileForm.validate();
+
+            if (!validator) {
+                return;
+            }
+
+            const payload = {
+                first_name: this.firstName,
+                last_name: this.lastName,
+                email: this.email,
+            }
+
+            if (this.password) {
+                payload.password = this.password;
+            }
+
+            this.spinner.update_user = true;
+
+            this.$axios.put('v1/me', payload)
+                .then((response) => {
+                    this.response.color = 'green';
+                    this.response.message = 'Dados atualizados com sucesso';
+
+                    this.STORE_USER(response.data.data);
+                })
+                .catch((e) => {
+                    const errorCode = e?.response?.data?.error || 'ServerError';
+                    this.response.color = 'red';
+                    this.response.message = message[errorCode];
+                })
+                .finally(() => {
+                    this.spinner.update_user = false;
+                });
+        }
+    },
 }
 </script>
-
-<style>
-
-</style>

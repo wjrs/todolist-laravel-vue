@@ -9,9 +9,10 @@ class UserService
 {
     public function update(User $user, array $data)
     {
-        /*if (!empty($data['email']) && User::where('email', $data['email'])->exists()) {
+        $checkEmailUser = User::where('email', $data['email'])->where('email', '!=', $user->email)->exists();
+        if (!empty($data['email']) && $checkEmailUser) {
             throw new UserHasBeenTakenException();
-        }*/
+        }
 
         if (!empty($data['password'])) {
             $data['password'] = bcrypt($data['password']);
