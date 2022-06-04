@@ -24,5 +24,6 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('todos')->middleware('auth:api')->group(function () {
         Route::get('', [TodoController::class, 'index']);
+        Route::post('', [TodoController::class, 'store']);
     });
 });
