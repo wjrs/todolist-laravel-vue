@@ -42,7 +42,11 @@
             class="flex items-center justify-btweeen bg-gray-300 rounded-sm px-4 h-15 mb-2"
         >
             <div>
-                {{ todo.label }}
+                <input
+                    type="text"
+                    v-model="todo.label"
+                    @keyup.enter="updateTodo(todo)"
+                >
             </div>
         </div>
     </div>
@@ -56,7 +60,7 @@ export default {
     data() {
         return {
             newTodo: '',
-            todos: '',
+            todos: [],
             spinner: {
                 get_todos: false,
             },
@@ -91,6 +95,21 @@ export default {
                 this.todos.unshift(response.data.data);
                 this.newTodo = '';
             }).finally(() => {
+                this.spinner.get_todos = false;
+            });
+        },
+
+        updateTodo(todo) {
+            if (!todo.label) {
+                return;
+            }
+
+            const payload = {
+                label: todo.label
+            };
+
+            this.spinner.get_todos = true;
+            this.$axios.put(`v1/todos/${todo.id}`, payload).finally(() => {
                 this.spinner.get_todos = false;
             });
         }
