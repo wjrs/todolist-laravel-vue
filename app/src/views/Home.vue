@@ -27,7 +27,7 @@
 
         <div
             v-if="spinner.get_todos"
-            class="text-center"
+            class="text-center mb-4"
         >
             <img
                 src="@/assets/img/spinner.svg"
@@ -55,6 +55,7 @@ export default {
 
     data() {
         return {
+            newTodo: '',
             todos: '',
             spinner: {
                 get_todos: false,
@@ -74,6 +75,24 @@ export default {
             }).finally(() => {
                 this.spinner.get_todos = false;
             })
+        },
+
+        createTodo() {
+            if (!this.newTodo) {
+                return;
+            }
+
+            const payload = {
+                label: this.newTodo
+            };
+
+            this.spinner.get_todos = true;
+            this.$axios.post('v1/todos', payload).then((response) => {
+                this.todos.unshift(response.data.data);
+                this.newTodo = '';
+            }).finally(() => {
+                this.spinner.get_todos = false;
+            });
         }
     },
 }
