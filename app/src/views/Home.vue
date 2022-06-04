@@ -47,6 +47,10 @@
                     v-model="todo.label"
                     @keyup.enter="updateTodo(todo)"
                 >
+                <button
+                    @click.stop.prevent="deleteTodo(todo)"
+                >x
+                </button>
             </div>
         </div>
     </div>
@@ -110,6 +114,16 @@ export default {
 
             this.spinner.get_todos = true;
             this.$axios.put(`v1/todos/${todo.id}`, payload).finally(() => {
+                this.spinner.get_todos = false;
+            });
+        },
+
+        deleteTodo(todo) {
+            this.spinner.get_todos = true;
+            this.$axios.delete(`v1/todos/${todo.id}`).then(() => {
+                const idx = this.todos.findIndex(obj => obj.id === todo.id);
+                this.todos.splice(idx, 1)
+            }).finally(() => {
                 this.spinner.get_todos = false;
             });
         }
