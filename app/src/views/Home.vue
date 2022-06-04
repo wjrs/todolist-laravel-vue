@@ -36,30 +36,26 @@
             >
         </div>
 
-        <div
+        <TodoCard
             v-for="todo in todos"
             :key="todo.id"
-            class="flex items-center justify-btweeen bg-gray-300 rounded-sm px-4 h-15 mb-2"
+            :todo="todo"
+            @afterDeleting="afterDeleting"
         >
-            <div>
-                <input
-                    type="text"
-                    v-model="todo.label"
-                    @keyup.enter="updateTodo(todo)"
-                >
-                <button
-                    @click.stop.prevent="deleteTodo(todo)"
-                >x
-                </button>
-            </div>
-        </div>
+        </TodoCard>
     </div>
 </template>
 
 <script>
 
+import TodoCard from "@/components/Todos/TodoCard";
+
 export default {
     name: 'Home',
+
+    components: {
+        TodoCard,
+    },
 
     data() {
         return {
@@ -79,7 +75,10 @@ export default {
         getTodos() {
             this.spinner.get_todos = true;
             this.$axios.get('v1/todos').then((response) => {
-                this.todos = response.data.data;
+                this.todos = response.data.data.map((obj) => ({
+                    ...obj,
+                    state: 'show'
+                }));
             }).finally(() => {
                 this.spinner.get_todos = false;
             })
@@ -95,37 +94,22 @@ export default {
             };
 
             this.spinner.get_todos = true;
-            this.$axios.post('v1/todos', payload).then((response) => {
-                this.todos.unshift(response.data.data);
+            this.$axios.post('v1/todos', payload).then(({ data: response }) => {
+                this.todos.unshift({
+                    ...response.data,
+                    state: 'show'
+                });
                 this.newTodo = '';
             }).finally(() => {
                 this.spinner.get_todos = false;
             });
         },
 
-        updateTodo(todo) {
-            if (!todo.label) {
-                return;
-            }
-
-            const payload = {
-                label: todo.label
-            };
-
+        afterDeleting(todo) {
             this.spinner.get_todos = true;
-            this.$axios.put(`v1/todos/${todo.id}`, payload).finally(() => {
-                this.spinner.get_todos = false;
-            });
-        },
-
-        deleteTodo(todo) {
-            this.spinner.get_todos = true;
-            this.$axios.delete(`v1/todos/${todo.id}`).then(() => {
-                const idx = this.todos.findIndex(obj => obj.id === todo.id);
-                this.todos.splice(idx, 1)
-            }).finally(() => {
-                this.spinner.get_todos = false;
-            });
+            const idx = this.todos.findIndex(obj => obj.id === todo.id);
+            this.todos.splice(idx, 1);
+            this.spinner.get_todos = false;
         }
     },
 }
