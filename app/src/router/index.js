@@ -10,6 +10,7 @@ import ResetPassword from "@/views/ResetPassword";
 import Home from "@/views/Home";
 import Guard from "@/service/middleware";
 import Profile from "@/views/Profile";
+import TodoTasks from "@/views/TodoTasks";
 
 Vue.use(VueRouter)
 
@@ -20,6 +21,7 @@ const routes = [
       children: [
           { path: '', name: 'index', component: Home },
           { path: 'profile', name: 'profile', component: Profile },
+          { path: 'todo/:id', name: 'todo-tasks', component: TodoTasks },
       ],
   },
   {
