@@ -65,6 +65,7 @@
                     v-for="task in todo.tasks"
                     :key="task.id"
                     :task="task"
+                    @afterDeleting="afterDeleting(task)"
                 >
                 </TodoTaskCard>
             </div>
@@ -129,6 +130,11 @@ export default {
             }).finally(() => {
                 this.spinner.get_todo = false;
             });
+        },
+
+        afterDeleting(task) {
+            const idx = this.todo.tasks.findIndex((obj) => obj.id === task.id);
+            this.todo.tasks.splice(idx, 1);
         },
     },
 }

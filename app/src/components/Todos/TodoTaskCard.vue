@@ -98,7 +98,13 @@ export default {
         },
         handleInput: debounce(function () {
             this.updateTask();
-        }, 300)
+        }, 300),
+
+        deleteTask() {
+            this.$axios.delete(`v1/todo-tasks/${this.task.id}`).then(() => {
+                this.$emit('afterDeleting', this.task);
+            });
+        },
     },
 }
 </script>

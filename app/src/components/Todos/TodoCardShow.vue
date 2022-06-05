@@ -1,8 +1,11 @@
 <template>
     <div class="flex items-center justify-between bg-gray-300 rounded-sm px-4 h-15 mb-2">
-        <div class="text-gray-700 font-light truncate">
+        <RouterLink
+            :to="{ name: 'todo-tasks', params: { id: todo.id } }"
+            class="text-gray-700 font-light truncate"
+        >
             {{ todo.label }}
-        </div>
+        </RouterLink>
 
         <div class="flex items-center justify-center">
             <TwDropdown
