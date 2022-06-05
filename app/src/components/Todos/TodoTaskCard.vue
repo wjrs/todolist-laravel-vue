@@ -65,6 +65,8 @@
 
 <script>
 
+import {debounce} from "lodash";
+
 export default {
     name: 'TodoTaskCard',
 
@@ -79,10 +81,24 @@ export default {
         return {};
     },
 
-    methods: {},
+    watch: {
+        'task.is_complete'() {
+            this.updateTask();
+        }
+    },
+
+    methods: {
+        updateTask() {
+            const payload = {
+                label: this.task.label,
+                is_complete: this.task.is_complete,
+            };
+
+            this.$axios.put(`v1/todo-tasks/${this.task.id}`, payload);
+        },
+        handleInput: debounce(function () {
+            this.updateTask();
+        }, 300)
+    },
 }
 </script>
-
-<style>
-
-</style>
