@@ -61,12 +61,12 @@
                 v-if="todo.tasks.length"
                 class="bg-gray-300 rounded-sm"
             >
-                <div
+                <TodoTaskCard
                     v-for="task in todo.tasks"
                     :key="task.id"
+                    :task="task"
                 >
-                    {{ task.label }}
-                </div>
+                </TodoTaskCard>
             </div>
 
             <div
@@ -80,9 +80,14 @@
 </template>
 
 <script>
+import TodoTaskCard from "@/components/Todos/TodoTaskCard";
 
 export default {
     name: 'TodoTasks',
+
+    components: {
+        TodoTaskCard
+    },
 
     data() {
         return {
@@ -90,6 +95,7 @@ export default {
             spinner: {
                 get_todo: true,
             },
+            newTask: '',
         };
     },
 
@@ -105,7 +111,25 @@ export default {
             }).finally(() => {
                 this.spinner.get_todo = false;
             });
-        }
+        },
+
+        addTask() {
+            if (!this.newTask) {
+                return;
+            }
+
+            const payload = {
+                label: this.newTask
+            }
+
+            this.spinner.get_todo = true;
+            this.$axios.post(`v1/todos/${this.$route.params.id}/tasks`, payload).then(({ data: response }) => {
+                this.todo.tasks.unshift(response.data);
+                this.newTask = '';
+            }).finally(() => {
+                this.spinner.get_todo = false;
+            });
+        },
     },
 }
 </script>
