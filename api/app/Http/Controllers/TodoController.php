@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TodoStoreRequest;
+use App\Http\Requests\TodoTaskStoreRequest;
 use App\Http\Resources\TodoResource;
+use App\Http\Resources\TodoTaskResource;
 use App\Models\Todo;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -62,5 +64,18 @@ class TodoController extends Controller
     public function destroy(Todo $todo)
     {
         $todo->delete();
+    }
+
+    /**
+     * @param Todo $todo
+     * @param TodoTaskStoreRequest $request
+     * @return TodoTaskResource
+     */
+    public function addTask(Todo $todo, TodoTaskStoreRequest $request)
+    {
+        $data = $request->validated();
+        $todoTask = $todo->tasks()->create($data);
+
+        return new TodoTaskResource($todoTask);
     }
 }
