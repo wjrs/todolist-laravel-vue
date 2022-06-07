@@ -15,6 +15,8 @@ class TodoTaskController extends Controller
      */
     public function update(TodoTask $todoTask, TodoTaskUpdateRequest $request)
     {
+        $this->authorize('update', $todoTask);
+
         $data = $request->validated();
 
         $todoTask->fill($data);
@@ -29,6 +31,8 @@ class TodoTaskController extends Controller
      */
     public function destroy(TodoTask $todoTask)
     {
+        $this->authorize('update', $todoTask);
+
         $todoTask->delete();
     }
 }
